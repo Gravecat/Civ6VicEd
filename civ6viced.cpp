@@ -79,5 +79,26 @@ int main(int argc, char** argv)
 	if (score_index) std::cout << "Score victory byte located: " << std::to_string(score_index) << std::endl;
 	const uint32_t relig_index = find_sequence(contents, {0x00, 0x00, 0x00, 0xD9, 0xDC, 0xE5, 0x18, 0x01});
 	if (relig_index) std::cout << "Religious victory byte located: " << std::to_string(relig_index) << std::endl;
+	
+	uint32_t turn_limit_index = find_sequence(contents, {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xAF, 0xF0, 0xF9, 0xDE, 0xE7, 0xA4, 0x0A, 0x2A, 0x02});
+	if (turn_limit_index)
+	{
+		turn_limit_index++;
+		std::cout << "Turn limit enabled, bytes located: " << std::to_string(turn_limit_index) << std::endl;
+	}
+	else
+	{
+		turn_limit_index = find_sequence(contents, {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xDE, 0x25, 0x99, 0x80, 0xE7, 0xA4, 0x0A, 0x2A, 0x02});
+		if (turn_limit_index)
+		{
+			turn_limit_index++;
+			std::cout << "Turn limit disabled, bytes located: " << std::to_string(turn_limit_index) << std::endl;
+		}
+		else
+		{
+			std::cout << "Could not locate turn limit data!" << std::endl;
+			return 1;
+		}
+	}
 	return 0;
 }
