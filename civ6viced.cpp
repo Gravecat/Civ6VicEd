@@ -68,32 +68,23 @@ int main(int argc, char** argv)
 	stream.close();
 	
 	const uint32_t war_index = find_sequence(contents, {0x00, 0x00, 0x00, 0x5D, 0x0E, 0xB5, 0x18, 0x01});
-	//if (war_index) std::cout << "War victory byte located: " << std::to_string(war_index) << std::endl;
 	const uint32_t diplo_index = find_sequence(contents, {0x00, 0x00, 0x00, 0xAD, 0xDD, 0x34, 0xE4, 0x05});
-	//if (diplo_index) std::cout << "Diplomatic victory byte located: " << std::to_string(diplo_index) << std::endl;
 	const uint32_t cult_index = find_sequence(contents, {0x00, 0x00, 0x00, 0xD1, 0x22, 0xBE, 0xEC, 0x01});
-	//if (cult_index) std::cout << "Cultural victory byte located: " << std::to_string(cult_index) << std::endl;
 	const uint32_t sci_index = find_sequence(contents, {0x00, 0x00, 0x00, 0x8C, 0xFF, 0x43, 0x18, 0x01});
-	//if (sci_index) std::cout << "Science victory byte located: " << std::to_string(sci_index) << std::endl;
 	const uint32_t score_index = find_sequence(contents, {0x00, 0x00, 0x00, 0x82, 0x4C, 0x6C, 0x62, 0x03});
-	//if (score_index) std::cout << "Score victory byte located: " << std::to_string(score_index) << std::endl;
 	const uint32_t relig_index = find_sequence(contents, {0x00, 0x00, 0x00, 0xD9, 0xDC, 0xE5, 0x18, 0x01});
-	//if (relig_index) std::cout << "Religious victory byte located: " << std::to_string(relig_index) << std::endl;
+	if (!war_index || !cult_index || !sci_index || !score_index || !relig_index)
+	{
+		std::cout << "Could not locate victory data indices! Is this a valid Civ6 save file?" << std::endl;
+		return 1;
+	}
 	
 	uint32_t turn_limit_index = find_sequence(contents, {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xAF, 0xF0, 0xF9, 0xDE, 0xE7, 0xA4, 0x0A, 0x2A, 0x02});
-	if (turn_limit_index)
-	{
-		turn_limit_index++;
-		//std::cout << "Turn limit enabled, bytes located: " << std::to_string(turn_limit_index) << std::endl;
-	}
+	if (turn_limit_index) turn_limit_index++;
 	else
 	{
 		turn_limit_index = find_sequence(contents, {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xDE, 0x25, 0x99, 0x80, 0xE7, 0xA4, 0x0A, 0x2A, 0x02});
-		if (turn_limit_index)
-		{
-			turn_limit_index++;
-			//std::cout << "Turn limit disabled, bytes located: " << std::to_string(turn_limit_index) << std::endl;
-		}
+		if (turn_limit_index) turn_limit_index++;
 		else
 		{
 			std::cout << "Could not locate turn limit data! Is this a valid Civ6 save file?" << std::endl;
@@ -120,7 +111,7 @@ int main(int argc, char** argv)
 		
 		switch(choice)
 		{
-			case 0: std::cout << "Goodbye!" << std::endl; exit(0);
+			case 0: std::cout << "Goodbye!" << std::endl; return 0;
 			case 1: contents.at(war_index) = !contents.at(war_index); break;
 			case 2: contents.at(cult_index) = !contents.at(cult_index); break;
 			case 3: contents.at(sci_index) = !contents.at(sci_index); break;
